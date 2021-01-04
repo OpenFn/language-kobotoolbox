@@ -11,8 +11,10 @@ Language Pack for building expressions and operations to interact with the
 
 ```json
 {
-  "username": "taylor@openfn.org",
-  "password": "supersecret"
+  "baseURL": "https://kf.kobotoolbox.org/api",
+  "username": "mamadou@openfn.org",
+  "password": "supersecret",
+  "apiVersion": "v2"
 }
 ```
 
