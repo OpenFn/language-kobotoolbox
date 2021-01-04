@@ -18,14 +18,27 @@ Language Pack for building expressions and operations to interact with the
 }
 ```
 
-#### sample expression using operation
+#### Get the list of forms
 
 ```js
-post({
-  "url": "api/v1/forms/data/wide/json/formId",
-  "body": {"a":1}
-  "headers": {}
-})
+getForms({}, state => {
+  console.log(state.data);
+  return state;
+});
+```
+
+### Get submissions for a specific form
+A query can be used to filter results.
+
+```js
+getSubmissions(
+  'aXecHjmbATuF6iGFmvBLBX',
+  { query: { end: { $gte: '2020-11-20' } } },
+  state => {
+    console.log(state.data);
+    return state;
+  }
+);
 ```
 
 ## Development

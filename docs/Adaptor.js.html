@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Adaptor.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Adaptor.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.execute = execute;
+exports.getForms = getForms;
+exports.getSubmissions = getSubmissions;
+Object.defineProperty(exports, "alterState", {
+  enumerable: true,
+  get: function get() {
+    return _languageCommon.alterState;
+  }
+});
+Object.defineProperty(exports, "dataPath", {
+  enumerable: true,
+  get: function get() {
+    return _languageCommon.dataPath;
+  }
+});
+Object.defineProperty(exports, "dataValue", {
+  enumerable: true,
+  get: function get() {
+    return _languageCommon.dataValue;
+  }
+});
+Object.defineProperty(exports, "each", {
+  enumerable: true,
+  get: function get() {
+    return _languageCommon.each;
+  }
+});
+Object.defineProperty(exports, "field", {
+  enumerable: true,
+  get: function get() {
+    return _languageCommon.field;
+  }
+});
+Object.defineProperty(exports, "fields", {
+  enumerable: true,
+  get: function get() {
+    return _languageCommon.fields;
+  }
+});
+Object.defineProperty(exports, "lastReferenceValue", {
+  enumerable: true,
+  get: function get() {
+    return _languageCommon.lastReferenceValue;
+  }
+});
+Object.defineProperty(exports, "merge", {
+  enumerable: true,
+  get: function get() {
+    return _languageCommon.merge;
+  }
+});
+Object.defineProperty(exports, "sourceValue", {
+  enumerable: true,
+  get: function get() {
+    return _languageCommon.sourceValue;
+  }
+});
+
+var _languageCommon = require("language-common");
+
+var _axios = _interopRequireDefault(require("axios"));
+
+var _url = require("url");
+
+var _path = require("path");
+
+function _interopRequireDefault(obj) { return obj &amp;&amp; obj.__esModule ? obj : { "default": obj }; }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i &lt; arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/** @module Adaptor */
+
+/**
+ * Execute a sequence of operations.
+ * Wraps `language-common/execute`, and prepends initial state for http.
+ * @example
+ * execute(
+ *   create('foo'),
+ *   delete('bar')
+ * )(state)
+ * @constructor
+ * @param {Operations} operations - Operations to be performed.
+ * @returns {Operation}
+ */
+function execute() {
+  for (var _len = arguments.length, operations = new Array(_len), _key = 0; _key &lt; _len; _key++) {
+    operations[_key] = arguments[_key];
+  }
+
+  var initialState = {
+    references: [],
+    data: null
+  };
+  return function (state) {
+    return _languageCommon.execute.apply(void 0, operations)(_objectSpread(_objectSpread({}, initialState), state));
+  };
+}
+/**
+ * Make a request to get the list of forms
+ * @example
+ *   getForms({}, state => {
+ *      console.log(state.data);
+ *      return state;
+ *   });
+ * @constructor
+ * @param {object} params - data to make the fetch
+ * @returns {Operation}
+ */
+
+
+function getForms(params, callback) {
+  return function (state) {
+    var _state$configuration = state.configuration,
+        baseURL = _state$configuration.baseURL,
+        apiVersion = _state$configuration.apiVersion,
+        username = _state$configuration.username,
+        password = _state$configuration.password;
+
+    var _expandReferences = (0, _languageCommon.expandReferences)(params)(state),
+        body = _expandReferences.body,
+        headers = _expandReferences.headers;
+
+    return (0, _axios["default"])({
+      method: 'GET',
+      baseURL: baseURL,
+      url: "".concat(apiVersion, "/assets/?format=json"),
+      auth: {
+        username: username,
+        password: password
+      }
+    }).then(function (response) {
+      console.log('Printing response...\n', response.data.count + ' forms fetched... \n');
+      var nextState = (0, _languageCommon.composeNextState)(state, response.data);
+      if (callback) return callback(nextState);
+      return nextState;
+    })["catch"](function (error) {
+      console.log(error);
+      return error;
+    });
+  };
+}
+/**
+ * Get submissions for a specific form
+ * @example
+ *   getSubmissions('aXecHjmbATuF6iGFmvBLBX', {}, state => {
+ *      console.log(state.data);
+ *      return state;
+ *   });
+ * @constructor
+ * @param {string} formId - id of the form
+ * @param {object} params - data to make the fetch or filter
+ * @returns {Operation}
+ */
+
+
+function getSubmissions(formId, params, callback) {
+  return function (state) {
+    var _state$configuration2 = state.configuration,
+        baseURL = _state$configuration2.baseURL,
+        apiVersion = _state$configuration2.apiVersion,
+        username = _state$configuration2.username,
+        password = _state$configuration2.password;
+
+    var _expandReferences2 = (0, _languageCommon.expandReferences)(params)(state),
+        body = _expandReferences2.body,
+        headers = _expandReferences2.headers,
+        query = _expandReferences2.query;
+
+    return (0, _axios["default"])({
+      method: 'GET',
+      baseURL: baseURL,
+      url: "".concat(apiVersion, "/assets/").concat(formId, "/data/?format=json"),
+      auth: {
+        username: username,
+        password: password
+      },
+      params: {
+        query: JSON.stringify(query)
+      }
+    }).then(function (response) {
+      console.log('Printing response...\n', response.data.count + ' submissions fetched... \n');
+      var nextState = (0, _languageCommon.composeNextState)(state, response.data);
+      if (callback) return callback(nextState);
+      return nextState;
+    })["catch"](function (error) {
+      console.log(error);
+      return error;
+    });
+  };
+} // Note that we expose the entire axios package to the user here.
+
+
+exports.axios = _axios["default"]; // What functions do you want from the common adaptor?
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Adaptor.html">Adaptor</a></li></ul><h3>Classes</h3><ul><li><a href="module-Adaptor-execute.html">execute</a></li><li><a href="module-Adaptor-getForms.html">getForms</a></li><li><a href="module-Adaptor-getSubmissions.html">getSubmissions</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Mon Jan 04 2021 12:12:54 GMT+0000 (Greenwich Mean Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
