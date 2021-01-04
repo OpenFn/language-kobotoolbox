@@ -40,7 +40,7 @@ export function execute(...operations) {
  * @example
  *   getForms({}, state => {
  *      console.log(state.data);
- *      return state; 
+ *      return state;
  *   });
  * @constructor
  * @param {object} params - data to make the fetch
@@ -69,7 +69,50 @@ export function getForms(params, callback) {
       })
       .catch(error => {
         console.log(error);
-        reject(error);
+        return error;
+      });
+  };
+}
+
+/**
+ * Get submissions for a specific form
+ * @example
+ *   getSubmissions('aXecHjmbATuF6iGFmvBLBX', {}, state => {
+ *      console.log(state.data);
+ *      return state;
+ *   });
+ * @constructor
+ * @param {string} formId - id of the form
+ * @param {object} params - data to make the fetch or filter
+ * @returns {Operation}
+ */
+export function getSubmissions(formId, params, callback) {
+  return state => {
+    const { baseURL, apiVersion, username, password } = state.configuration;
+    const { body, headers, query } = expandReferences(params)(state);
+
+    return axios({
+      method: 'GET',
+      baseURL,
+      url: `${apiVersion}/assets/${formId}/data/?format=json`,
+      auth: { username, password },
+      params: {
+        query: JSON.stringify(query),
+      },
+    })
+      .then(response => {
+        console.log(
+          'Printing response...\n',
+          response.data.count + ' submissions fetched... \n'
+        );
+
+        const nextState = composeNextState(state, response.data);
+        if (callback) return callback(nextState);
+        return nextState;
+      })
+      .catch(error => {
+        console.log(error);
+        return error;
       });
   };
 }
