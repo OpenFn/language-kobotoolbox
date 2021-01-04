@@ -48,12 +48,13 @@ export function execute(...operations) {
  */
 export function getForms(params, callback) {
   return state => {
-    const { host, username, password } = state.configuration;
+    const { baseURL, apiVersion, username, password } = state.configuration;
     const { body, headers } = expandReferences(params)(state);
 
     return axios({
       method: 'GET',
-      baseURL: host,
+      baseURL,
+      url: `${apiVersion}/assets/?format=json`,
       auth: { username, password },
     })
       .then(response => {
