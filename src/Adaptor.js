@@ -36,39 +36,35 @@ export function execute(...operations) {
 }
 
 /**
- * Make a POST request
+ * Make a request to get the list of forms
  * @example
- * execute(
- *   post(params)
- * )(state)
+ *   getForms({}, state => {
+ *      console.log(state.data);
+ *      return state; 
+ *   });
  * @constructor
  * @param {object} params - data to make the fetch
  * @returns {Operation}
  */
-export function post(params, callback) {
+export function getForms(params, callback) {
   return state => {
-    const { baseUrl, username, password } = state.configuration;
-    const { url, body, headers } = expandReferences(params)(state);
+    const { host, username, password } = state.configuration;
+    const { body, headers } = expandReferences(params)(state);
 
     return axios({
-      method: 'post',
-      headers: {},
-      params: {},
-      baseURL,
-      url,
-      data: body,
+      method: 'GET',
+      baseURL: host,
       auth: { username, password },
     })
       .then(response => {
         console.log(
           'Printing response...\n',
-          JSON.stringify(response, null, 4) + '\n',
-          'POST succeeded.'
+          response.data.count + ' forms fetched... \n'
         );
 
-        const nextState = composeNextState(state, response);
-        if (callback) resolve(callback(nextState));
-        resolve(nextState);
+        const nextState = composeNextState(state, response.data);
+        if (callback) return callback(nextState);
+        return nextState;
       })
       .catch(error => {
         console.log(error);
