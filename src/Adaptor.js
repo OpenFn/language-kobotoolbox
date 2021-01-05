@@ -43,13 +43,12 @@ export function execute(...operations) {
  *      return state;
  *   });
  * @constructor
- * @param {object} params - data to make the fetch
+ * @param {function} callback - callback to execute after fetching form list.
  * @returns {Operation}
  */
-export function getForms(params, callback) {
+export function getForms(callback) {
   return state => {
     const { baseURL, apiVersion, username, password } = state.configuration;
-    const { body, headers } = expandReferences(params)(state);
 
     return axios({
       method: 'GET',
