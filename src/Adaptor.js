@@ -53,7 +53,7 @@ export function getForms(callback) {
     return axios({
       method: 'GET',
       baseURL,
-      url: `${apiVersion}/assets/?format=json`,
+      url: `api/${apiVersion}/assets/?format=json`,
       auth: { username, password },
     })
       .then(response => {
@@ -93,7 +93,7 @@ export function getSubmissions(formId, params, callback) {
     return axios({
       method: 'GET',
       baseURL,
-      url: `${apiVersion}/assets/${formId}/data/?format=json`,
+      url: `api/${apiVersion}/assets/${formId}/data/?format=json`,
       auth: { username, password },
       params: {
         query: JSON.stringify(query),
