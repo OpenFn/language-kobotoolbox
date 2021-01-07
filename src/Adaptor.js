@@ -38,7 +38,7 @@ export function execute(...operations) {
 /**
  * Make a request to get the list of forms
  * @example
- *   getForms({}, state => {
+ *   getForms(state => {
  *      console.log(state.data);
  *      return state;
  *   });
