@@ -6,7 +6,7 @@ import ClientFixtures, { fixtures } from './ClientFixtures';
 import Adaptor from '../src';
 const { execute, post } = Adaptor;
 
-import { getSubmissions } from '../lib/Adaptor';
+import { getSubmissions, getForms } from '../lib/Adaptor';
 
 describe('execute', () => {
   it('executes each operation in sequence', done => {
@@ -54,7 +54,7 @@ describe('getSubmissions', () => {
         results: [{}, {}],
       });
   });
-  it('should get a lsit of submissions', () => {
+  it('should get a list of submissions', () => {
     let state = {
       configuration: {
         username: 'john',
@@ -68,6 +68,40 @@ describe('getSubmissions', () => {
       nextState => {
         expect(nextState.data).to.deep.eq({
           count: 2,
+          next: null,
+          previous: null,
+          results: [{}, {}],
+        });
+      }
+    );
+  }).timeout(10 * 1000);
+});
+
+describe('getForms', () => {
+  before(() => {
+    nock('https://kf.kobotoolbox.org')
+      .get('/api/v2/assets/?format=json')
+      .basicAuth({ user: 'john', pass: 'doe' })
+      .reply(200, {
+        count: 10,
+        next: null,
+        previous: null,
+        results: [{}, {}],
+      });
+  });
+  it('should get a list of forms', () => {
+    let state = {
+      configuration: {
+        username: 'john',
+        password: 'doe',
+        baseURL: 'https://kf.kobotoolbox.org',
+        apiVersion: 'v2',
+      },
+    };
+    return execute(getForms())(state).then(
+      nextState => {
+        expect(nextState.data).to.deep.eq({
+          count: 10,
           next: null,
           previous: null,
           results: [{}, {}],
