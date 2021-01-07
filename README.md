@@ -11,7 +11,7 @@ Language Pack for building expressions and operations to interact with the
 
 ```json
 {
-  "baseURL": "https://kf.kobotoolbox.org/api",
+  "baseURL": "https://kf.kobotoolbox.org",
   "username": "mamadou@openfn.org",
   "password": "supersecret",
   "apiVersion": "v2"
@@ -21,13 +21,14 @@ Language Pack for building expressions and operations to interact with the
 #### Get the list of forms
 
 ```js
-getForms({}, state => {
+getForms(state => {
   console.log(state.data);
   return state;
 });
 ```
 
 ### Get submissions for a specific form
+
 A query can be used to filter results.
 
 ```js
