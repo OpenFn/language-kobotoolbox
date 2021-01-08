@@ -83,6 +83,7 @@ export function getForms(callback) {
  * @constructor
  * @param {string} formId - id of the form
  * @param {object} params - data to make the fetch or filter
+ * @param {function} callback - callback to execute after fetching form submissions.
  * @returns {Operation}
  */
 export function getSubmissions(formId, params, callback) {
