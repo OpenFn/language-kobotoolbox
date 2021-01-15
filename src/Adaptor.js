@@ -56,11 +56,7 @@ export function getForms(callback) {
         auth: { username, password },
       })(state)
       .then(response => {
-        console.log(
-          'Printing response...\n',
-          response.data.count + ' forms fetched... \n'
-        );
-
+        console.log('✓', response.data.count, 'forms fetched.');
         const nextState = composeNextState(state, response.data);
         if (callback) return callback(nextState);
         return nextState;
@@ -100,10 +96,7 @@ export function getSubmissions(formId, params, callback) {
         },
       })(state)
       .then(response => {
-        console.log(
-          'Printing response...\n',
-          response.data.count + ' submissions fetched... \n'
-        );
+        console.log('✓', response.data.count, 'submissions fetched.');
 
         const nextState = composeNextState(state, response.data);
         if (callback) return callback(nextState);

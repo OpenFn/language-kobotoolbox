@@ -1,9 +1,8 @@
 {
   "name": "language-kobotoolbox",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A Kobo Toolbox Language Pack for OpenFn",
-  "main": "src/index.js",
-  "type": "module",
+  "main": "lib/index.js",
   "scripts": {
     "build": "make",
     "test": "mocha --require @babel/register",
