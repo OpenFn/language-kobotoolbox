@@ -1,13 +1,11 @@
+/** @module Adaptor */
+
 import {
   execute as commonExecute,
   composeNextState,
   expandReferences,
+  http,
 } from 'language-common';
-import axios from 'axios';
-import { resolve as resolveUrl } from 'url';
-import { resolve } from 'path';
-
-/** @module Adaptor */
 
 /**
  * Execute a sequence of operations.
@@ -17,7 +15,7 @@ import { resolve } from 'path';
  *   create('foo'),
  *   delete('bar')
  * )(state)
- * @constructor
+ * @function
  * @param {Operations} operations - Operations to be performed.
  * @returns {Operation}
  */
@@ -37,25 +35,26 @@ export function execute(...operations) {
 
 /**
  * Make a request to get the list of forms
+ * @public
  * @example
- *   getForms(state => {
- *      console.log(state.data);
- *      return state;
- *   });
- * @constructor
- * @param {function} callback - callback to execute after fetching form list.
+ * getForms(state => {
+ *    console.log(state.data);
+ *    return state;
+ * });
+ * @function
+ * @param {function} callback - callback to execute after fetching form list
  * @returns {Operation}
  */
 export function getForms(callback) {
   return state => {
     const { baseURL, apiVersion, username, password } = state.configuration;
 
-    return axios({
-      method: 'GET',
-      baseURL,
-      url: `api/${apiVersion}/assets/?format=json`,
-      auth: { username, password },
-    })
+    return http
+      .get({
+        baseURL,
+        url: `api/${apiVersion}/assets/?format=json`,
+        auth: { username, password },
+      })(state)
       .then(response => {
         console.log(
           'Printing response...\n',
@@ -76,11 +75,11 @@ export function getForms(callback) {
 /**
  * Get submissions for a specific form
  * @example
- *   getSubmissions('aXecHjmbATuF6iGFmvBLBX', {}, state => {
- *      console.log(state.data);
- *      return state;
- *   });
- * @constructor
+ * getSubmissions('aXecHjmbATuF6iGFmvBLBX', {}, state => {
+ *   console.log(state.data);
+ *   return state;
+ * });
+ * @function
  * @param {string} formId - id of the form
  * @param {object} params - data to make the fetch or filter
  * @param {function} callback - callback to execute after fetching form submissions.
@@ -91,15 +90,15 @@ export function getSubmissions(formId, params, callback) {
     const { baseURL, apiVersion, username, password } = state.configuration;
     const { body, headers, query } = expandReferences(params)(state);
 
-    return axios({
-      method: 'GET',
-      baseURL,
-      url: `api/${apiVersion}/assets/${formId}/data/?format=json`,
-      auth: { username, password },
-      params: {
-        query: JSON.stringify(query),
-      },
-    })
+    return http
+      .get({
+        baseURL,
+        url: `api/${apiVersion}/assets/${formId}/data/?format=json`,
+        auth: { username, password },
+        params: {
+          query: JSON.stringify(query),
+        },
+      })(state)
       .then(response => {
         console.log(
           'Printing response...\n',
@@ -117,10 +116,6 @@ export function getSubmissions(formId, params, callback) {
   };
 }
 
-// Note that we expose the entire axios package to the user here.
-exports.axios = axios;
-
-// What functions do you want from the common adaptor?
 export {
   alterState,
   dataPath,
@@ -128,6 +123,7 @@ export {
   each,
   field,
   fields,
+  http,
   lastReferenceValue,
   merge,
   sourceValue,

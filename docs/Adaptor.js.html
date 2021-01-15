@@ -70,6 +70,12 @@ Object.defineProperty(exports, "fields", {
     return _languageCommon.fields;
   }
 });
+Object.defineProperty(exports, "http", {
+  enumerable: true,
+  get: function get() {
+    return _languageCommon.http;
+  }
+});
 Object.defineProperty(exports, "lastReferenceValue", {
   enumerable: true,
   get: function get() {
@@ -91,21 +97,11 @@ Object.defineProperty(exports, "sourceValue", {
 
 var _languageCommon = require("language-common");
 
-var _axios = _interopRequireDefault(require("axios"));
-
-var _url = require("url");
-
-var _path = require("path");
-
-function _interopRequireDefault(obj) { return obj &amp;&amp; obj.__esModule ? obj : { "default": obj }; }
-
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i &lt; arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-/** @module Adaptor */
 
 /**
  * Execute a sequence of operations.
@@ -115,7 +111,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  *   create('foo'),
  *   delete('bar')
  * )(state)
- * @constructor
+ * @function
  * @param {Operations} operations - Operations to be performed.
  * @returns {Operation}
  */
@@ -134,13 +130,14 @@ function execute() {
 }
 /**
  * Make a request to get the list of forms
+ * @public
  * @example
- *   getForms(state => {
- *      console.log(state.data);
- *      return state;
- *   });
- * @constructor
- * @param {function} callback - callback to execute after fetching form list.
+ * getForms(state => {
+ *    console.log(state.data);
+ *    return state;
+ * });
+ * @function
+ * @param {function} callback - callback to execute after fetching form list
  * @returns {Operation}
  */
 
@@ -152,15 +149,14 @@ function getForms(callback) {
         apiVersion = _state$configuration.apiVersion,
         username = _state$configuration.username,
         password = _state$configuration.password;
-    return (0, _axios["default"])({
-      method: 'GET',
+    return _languageCommon.http.get({
       baseURL: baseURL,
       url: "api/".concat(apiVersion, "/assets/?format=json"),
       auth: {
         username: username,
         password: password
       }
-    }).then(function (response) {
+    })(state).then(function (response) {
       console.log('Printing response...\n', response.data.count + ' forms fetched... \n');
       var nextState = (0, _languageCommon.composeNextState)(state, response.data);
       if (callback) return callback(nextState);
@@ -174,11 +170,11 @@ function getForms(callback) {
 /**
  * Get submissions for a specific form
  * @example
- *   getSubmissions('aXecHjmbATuF6iGFmvBLBX', {}, state => {
- *      console.log(state.data);
- *      return state;
- *   });
- * @constructor
+ * getSubmissions('aXecHjmbATuF6iGFmvBLBX', {}, state => {
+ *   console.log(state.data);
+ *   return state;
+ * });
+ * @function
  * @param {string} formId - id of the form
  * @param {object} params - data to make the fetch or filter
  * @param {function} callback - callback to execute after fetching form submissions.
@@ -199,8 +195,7 @@ function getSubmissions(formId, params, callback) {
         headers = _expandReferences.headers,
         query = _expandReferences.query;
 
-    return (0, _axios["default"])({
-      method: 'GET',
+    return _languageCommon.http.get({
       baseURL: baseURL,
       url: "api/".concat(apiVersion, "/assets/").concat(formId, "/data/?format=json"),
       auth: {
@@ -210,7 +205,7 @@ function getSubmissions(formId, params, callback) {
       params: {
         query: JSON.stringify(query)
       }
-    }).then(function (response) {
+    })(state).then(function (response) {
       console.log('Printing response...\n', response.data.count + ' submissions fetched... \n');
       var nextState = (0, _languageCommon.composeNextState)(state, response.data);
       if (callback) return callback(nextState);
@@ -220,10 +215,7 @@ function getSubmissions(formId, params, callback) {
       return error;
     });
   };
-} // Note that we expose the entire axios package to the user here.
-
-
-exports.axios = _axios["default"]; // What functions do you want from the common adaptor?
+}
 </code></pre>
         </article>
     </section>
@@ -234,13 +226,13 @@ exports.axios = _axios["default"]; // What functions do you want from the common
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Adaptor.html">Adaptor</a></li></ul><h3>Classes</h3><ul><li><a href="module-Adaptor-execute.html">execute</a></li><li><a href="module-Adaptor-getForms.html">getForms</a></li><li><a href="module-Adaptor-getSubmissions.html">getSubmissions</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#execute">execute</a></li><li><a href="global.html#getForms">getForms</a></li><li><a href="global.html#getSubmissions">getSubmissions</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Fri Jan 08 2021 11:33:15 GMT+0000 (Greenwich Mean Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Fri Jan 15 2021 07:34:08 GMT+0000 (Greenwich Mean Time)
 </footer>
 
 <script> prettyPrint(); </script>
