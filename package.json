@@ -2,6 +2,11 @@
   "name": "@openfn/language-kobotoolbox",
   "version": "1.0.4",
   "description": "A Kobo Toolbox Language Pack for OpenFn",
+  "homepage": "https://docs.openfn.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openfn/language-kobotoolbox.git"
+  },
   "main": "lib/index.js",
   "scripts": {
     "build": "make",
