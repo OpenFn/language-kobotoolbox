@@ -5,7 +5,7 @@ import {
   composeNextState,
   expandReferences,
   http,
-} from 'language-common';
+} from '@openfn/language-common';
 
 /**
  * Execute a sequence of operations.
@@ -120,4 +120,4 @@ export {
   lastReferenceValue,
   merge,
   sourceValue,
-} from 'language-common';
+} from '@openfn/language-common';
