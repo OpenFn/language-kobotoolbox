@@ -37,33 +37,37 @@ export function execute(...operations) {
  * Make a request to get the list of forms
  * @public
  * @example
- * getForms(state => {
+ * getForms({}, state => {
  *    console.log(state.data);
  *    return state;
  * });
  * @function
- * @param {function} callback - callback to execute after fetching form list
+ * @param {object} params - Query, Headers and Authentication parameters
+ * @param {function} callback - (Optional) Callback function to execute after fetching form list
  * @returns {Operation}
  */
-export function getForms(callback) {
+export function getForms(params, callback) {
   return state => {
+    params = expandReferences(params)(state);
+
     const { baseURL, apiVersion, username, password } = state.configuration;
 
+    const url = `${baseURL}/api/${apiVersion}/assets/?format=json`;
+    const auth = { username, password };
+
+    const config = {
+      url,
+      params,
+      auth,
+    };
+
     return http
-      .get({
-        baseURL,
-        url: `api/${apiVersion}/assets/?format=json`,
-        auth: { username, password },
-      })(state)
+      .get(config)(state)
       .then(response => {
         console.log('✓', response.data.count, 'forms fetched.');
         const nextState = composeNextState(state, response.data);
         if (callback) return callback(nextState);
         return nextState;
-      })
-      .catch(error => {
-        console.log(error);
-        return error;
       });
   };
 }
@@ -71,30 +75,33 @@ export function getForms(callback) {
 /**
  * Get submissions for a specific form
  * @example
- * getSubmissions('aXecHjmbATuF6iGFmvBLBX', {}, state => {
+ * getSubmissions({formId: 'aXecHjmbATuF6iGFmvBLBX'}, state => {
  *   console.log(state.data);
  *   return state;
  * });
  * @function
- * @param {string} formId - id of the form
- * @param {object} params - data to make the fetch or filter
- * @param {function} callback - callback to execute after fetching form submissions.
+ * @param {object} params - Form Id and data to make the fetch or filter
+ * @param {function} callback - (Optional) Callback function to execute after fetching form submissions
  * @returns {Operation}
  */
-export function getSubmissions(formId, params, callback) {
+export function getSubmissions(params, callback) {
   return state => {
+    params = expandReferences(params)(state);
+
     const { baseURL, apiVersion, username, password } = state.configuration;
-    const { body, headers, query } = expandReferences(params)(state);
+    const { formId } = params;
+
+    const url = `${baseURL}/api/${apiVersion}/assets/${formId}/data/?format=json`;
+    const auth = { username, password };
+
+    const config = {
+      url,
+      params,
+      auth,
+    };
 
     return http
-      .get({
-        baseURL,
-        url: `api/${apiVersion}/assets/${formId}/data/?format=json`,
-        auth: { username, password },
-        params: {
-          query: JSON.stringify(query),
-        },
-      })(state)
+      .get(config)(state)
       .then(response => {
         console.log('✓', response.data.count, 'submissions fetched.');
 
