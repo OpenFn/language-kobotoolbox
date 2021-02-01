@@ -21,7 +21,7 @@ Language Pack for building expressions and operations to interact with the
 #### Get the list of forms
 
 ```js
-getForms(state => {
+getForms({}, state => {
   console.log(state.data);
   return state;
 });
@@ -33,8 +33,7 @@ A query can be used to filter results.
 
 ```js
 getSubmissions(
-  'aXecHjmbATuF6iGFmvBLBX',
-  { query: { end: { $gte: '2020-11-20' } } },
+  { formId: 'aXecHjmbATuF6iGFmvBLBX', query: { end: { $gte: '2020-11-20' } } },
   state => {
     console.log(state.data);
     return state;
