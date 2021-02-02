@@ -108,10 +108,6 @@ export function getSubmissions(params, callback) {
         const nextState = composeNextState(state, response.data);
         if (callback) return callback(nextState);
         return nextState;
-      })
-      .catch(error => {
-        console.log(error);
-        return error;
       });
   };
 }
