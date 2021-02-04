@@ -128,3 +128,71 @@ describe('getSubmissions', () => {
     expect(error.message).to.eql('Request failed with status code 500');
   });
 });
+
+describe('getForms', () => {
+   before(() => {
+    nock('https://kf.kobotoolbox.org')
+      .get('/api/v2/assets/?format=json')
+      .basicAuth({ user: 'john', pass: 'doe' })
+      .reply(200, {
+        count: 10,
+        next: null,
+        previous: null,
+        results: [{}, {}],
+      });
+  });
+
+  it('should get a list of forms', async () => {
+    let state = {
+      configuration: {
+        username: 'john',
+        password: 'doe',
+        baseURL: 'https://kf.kobotoolbox.org',
+        apiVersion: 'v2',
+      },
+    };
+    const nextState = await execute(getForms())(state).then(nextState => {
+      return nextState;
+    });
+    expect(nextState.data).to.deep.eq({
+      count: 10,
+      next: null,
+      previous: null,
+      results: [{}, {}],
+    });
+  }).timeout(10 * 1000);
+/* 
+  it('throws an error for a 404 response', async () => {
+
+    const state = {
+      configuration: {
+        username: 'john',
+        password: 'doe',
+        baseURL: 'https://kf.kobotoolbox.org',
+        apiVersion: 'v2',
+      },
+    };
+
+    const error = await execute(getForms())(state).catch(error => {
+      return error;
+    });
+    expect(error.message).to.eql('Request failed with status code 404');
+  });
+
+  it('throws different kind of errors', async () => {
+   
+    const state = {
+      configuration: {
+        username: 'john',
+        password: 'doe',
+        baseURL: 'https://kf.kobotoolbox.org',
+        apiVersion: 'v2',
+      },
+    };
+
+    const error = await execute(getForms())(state).catch(error => {
+      return error;
+    });
+    expect(error.message).to.eql('Request failed with status code 500');
+  }); */
+});
