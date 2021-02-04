@@ -52,8 +52,23 @@ describe('getSubmissions', () => {
         previous: null,
         results: [{}, {}],
       });
+
+    nock('https://kf.kobotoolbox.org')
+      .get('/api/v2/assets/bXecHjmbATuF6iGFmvBLBX/data/?format=json')
+      .basicAuth({ user: 'john', pass: 'doe' })
+      .reply(404, {
+        body: 'A 404 error.',
+      });
+
+    nock('https://kf.kobotoolbox.org')
+      .get('/api/v2/assets/cXecHjmbATuF6iGFmvBLBX/data/?format=json')
+      .basicAuth({ user: 'john', pass: 'doe' })
+      .reply(500, {
+        body: 'Another error.',
+      });
   });
-  it('should get a list of submissions', () => {
+
+  it('should get a list of submissions', async () => {
     let state = {
       configuration: {
         username: 'john',
@@ -63,66 +78,21 @@ describe('getSubmissions', () => {
         apiVersion: 'v2',
       },
     };
-    return execute(getSubmissions({ formId: 'aXecHjmbATuF6iGFmvBLBX' }))(
-      state
-    ).then(nextState => {
-      expect(nextState.data).to.deep.eq({
-        count: 2,
-        next: null,
-        previous: null,
-        results: [{}, {}],
-      });
+
+    const nextState = await execute(
+      getSubmissions({ formId: 'aXecHjmbATuF6iGFmvBLBX' })
+    )(state).then(nextState => {
+      return nextState;
     });
-  }).timeout(10 * 1000);
-});
-
-describe('getForms', () => {
-  before(() => {
-    nock('https://kf.kobotoolbox.org')
-      .get('/api/v2/assets/?format=json')
-      .basicAuth({ user: 'john', pass: 'doe' })
-      .reply(200, {
-        count: 10,
-        next: null,
-        previous: null,
-        results: [{}, {}],
-      });
-
-    nock('https://kf.kobotoolbox.org')
-      .get('/api/v2/differentAssets/?format=json')
-      .basicAuth({ user: 'john', pass: 'doe' })
-      .reply(404, {
-        body: 'A 404 error.',
-      });
-
-    nock('https://kf.kobotoolbox.org')
-      .get('/api/v2/fakeAssets/?format=json')
-      .basicAuth({ user: 'john', pass: 'doe' })
-      .reply(500, {
-        body: 'Another error.',
-      });
-  });
-
-  it('should get a list of forms', () => {
-    let state = {
-      configuration: {
-        username: 'john',
-        password: 'doe',
-        baseURL: 'https://kf.kobotoolbox.org',
-        apiVersion: 'v2',
-      },
-    };
-    return execute(getForms('assets/?format=json'))(state).then(nextState => {
-      expect(nextState.data).to.deep.eq({
-        count: 10,
-        next: null,
-        previous: null,
-        results: [{}, {}],
-      });
+    expect(nextState.data).to.deep.eq({
+      count: 2,
+      next: null,
+      previous: null,
+      results: [{}, {}],
     });
   }).timeout(10 * 1000);
 
-  it('throws an error for a 404 response', () => {
+  it('throws an error for a 404 response', async () => {
     const state = {
       configuration: {
         username: 'john',
@@ -132,14 +102,15 @@ describe('getForms', () => {
       },
     };
 
-    return execute(getForms('differentAssets/?format=json'))(state).catch(
-      error => {
-        expect(error.message).to.eql('Request failed with status code 404');
-      }
-    );
+    const error = await execute(
+      getSubmissions({ formId: 'bXecHjmbATuF6iGFmvBLBX' })
+    )(state).catch(error => {
+      return error;
+    });
+    expect(error.message).to.eql('Request failed with status code 404');
   });
 
-  it('throws different kind of errors', () => {
+  it('throws different kind of errors', async () => {
     const state = {
       configuration: {
         username: 'john',
@@ -149,8 +120,11 @@ describe('getForms', () => {
       },
     };
 
-    return execute(getForms('fakeAssets/?format=json'))(state).catch(error => {
-      expect(error.message).to.eql('Request failed with status code 500');
+    const error = await execute(
+      getSubmissions({ formId: 'cXecHjmbATuF6iGFmvBLBX' })
+    )(state).catch(error => {
+      return error;
     });
+    expect(error.message).to.eql('Request failed with status code 500');
   });
 });
