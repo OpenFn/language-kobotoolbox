@@ -37,23 +37,22 @@ export function execute(...operations) {
  * Make a request to get the list of forms
  * @public
  * @example
- * getForms('/endpoint', {}, state => {
+ * getForms({}, state => {
  *    console.log(state.data);
  *    return state;
  * });
  * @function
- * @param {string} path - Query, Headers and Authentication parameters
  * @param {object} params - Query, Headers and Authentication parameters
  * @param {function} callback - (Optional) Callback function to execute after fetching form list
  * @returns {Operation}
  */
-export function getForms(path, params, callback) {
+export function getForms(params, callback) {
   return state => {
     params = expandReferences(params)(state);
 
     const { baseURL, apiVersion, username, password } = state.configuration;
 
-    const url = `${baseURL}/api/${apiVersion}/${path}`;
+    const url = `${baseURL}/api/${apiVersion}/assets/?format=json`;
     const auth = { username, password };
 
     const config = {
