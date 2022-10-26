@@ -1,7 +1,11 @@
-# Language KoboToolbox [![Build Status](https://travis-ci.org/OpenFn/language-kobotoolbox.svg?branch=master)](https://travis-ci.org/OpenFn/language-kobotoolbox)
+# _⚠️ MOVED TO [OpenFn/adaptors](https://github.com/OpenFn/adaptors)! ⚠️_
 
-Language Pack for building expressions and operations to interact with the
-[TEMPLATE] API.
+**N.B.: New versions are available at:
+https://github.com/OpenFn/adaptors/tree/main/packages/kobotoolbox**
+
+# Language Kobotoolbox (Archived)
+
+Language Pack for building expressions and operations to interact with the Kobotoolbox API.
 
 ## Documentation
 
